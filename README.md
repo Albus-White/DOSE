@@ -8,6 +8,10 @@ DOSE-style data selection.
 - `clip_score.py`: compute CLIP image-text scores and append `clip_score`.
 - `dense_guide_sampling.py`: single-dimension dense-guide WRS and
   two-dimension dense-guide WRS intersection expansion.
+- `dense_guide_sampling_visualization.png`: toy visualization of the sampling
+  behavior.
+- `dense_guide_sampling_visualization.summary.json`: numeric summary for the
+  visualization.
 
 ## CLIP Score
 
@@ -66,3 +70,46 @@ intersection rule.
 
 The sampling script does not compute LLM logits or CLIP scores. It consumes
 existing score fields.
+
+## Visualization Result
+
+The generated visualization is included in this folder:
+
+```text
+dense_guide_sampling_visualization.png
+dense_guide_sampling_visualization.summary.json
+```
+
+It uses 6,000 toy scores sampled from a clipped normal distribution in `[0, 1]`
+and selects a 20% budget, i.e. 1,200 samples.
+
+Left panel:
+
+- Gray shows the original normal score distribution.
+- Dark outline shows raw top-20% selection, which hard-cuts the right tail and
+  produces a narrow high-score-only subset.
+- Orange shows dense-guide WRS-20%, which shifts the selected distribution
+  toward higher scores while retaining broader coverage than raw top-k.
+- Dashed vertical lines show the KDE peak of the original distribution and the
+  dense-guide target mean.
+
+Right panel:
+
+- Gray points are all samples in the two-dimensional text-score / CLIP-score
+  space.
+- Dark points show a simple raw top baseline by `text_score + clip_score`.
+- Red points show the final 2D dense-guide WRS samples.
+- In this demo, the 20% final budget required expanding the per-dimension
+  candidate ratio to 40%:
+
+```text
+0.20 -> 493
+0.24 -> 636
+0.27 -> 773
+0.30 -> 904
+0.35 -> 1159
+0.40 -> 1429
+```
+
+After the 40% candidate intersection produced enough samples, the final subset
+was truncated to the requested 1,200 budget.

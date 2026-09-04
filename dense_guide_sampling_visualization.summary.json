@@ -1,0 +1,81 @@
+{
+  "n": 6000,
+  "budget": 1200,
+  "original_text_mean_std": [
+    0.49786518967998206,
+    0.14923235729451978
+  ],
+  "top1d_text_mean_std": [
+    0.7077820726956824,
+    0.06875315479394582
+  ],
+  "wrs1d_text_mean_std": [
+    0.6595648507671007,
+    0.11864073693552749
+  ],
+  "top2d_text_clip_mean": [
+    0.6987561439492074,
+    0.6376579149403853
+  ],
+  "wrs2d_text_clip_mean": [
+    0.6681232430869516,
+    0.6227173527887365
+  ],
+  "wrs2d_meta": {
+    "method": "wrs2d_intersection_expand",
+    "budget": 1200,
+    "used_ratio": 0.4,
+    "expand_trace": [
+      {
+        "ratio": 0.2,
+        "top_k_each_dim": 1200,
+        "intersection_size": 493
+      },
+      {
+        "ratio": 0.24,
+        "top_k_each_dim": 1440,
+        "intersection_size": 636
+      },
+      {
+        "ratio": 0.27,
+        "top_k_each_dim": 1620,
+        "intersection_size": 773
+      },
+      {
+        "ratio": 0.3,
+        "top_k_each_dim": 1800,
+        "intersection_size": 904
+      },
+      {
+        "ratio": 0.35,
+        "top_k_each_dim": 2100,
+        "intersection_size": 1159
+      },
+      {
+        "ratio": 0.4,
+        "top_k_each_dim": 2400,
+        "intersection_size": 1429
+      }
+    ],
+    "text_guide": {
+      "source_peak": 0.4911937377690802,
+      "source_sigma": 0.14923235729451978,
+      "target_mean": 0.74559686888454,
+      "target_sigma": 0.14923235729451978
+    },
+    "clip_guide": {
+      "source_peak": 0.5057872794941114,
+      "source_sigma": 0.10835875873266193,
+      "target_mean": 0.6733852991981444,
+      "target_sigma": 0.10835875873266193
+    },
+    "text_weight_minmax": [
+      0.0008551836606788989,
+      78.19719888388836
+    ],
+    "clip_weight_minmax": [
+      0.0011973778961997415,
+      36.17618773076447
+    ]
+  }
+}
