@@ -1,4 +1,4 @@
-# DOSE/Data Selection Tools
+# DOSE: Data Selection for Multi-Modal LLMs via Off-the-Shelf Model
 
 This folder intentionally keeps only the current implementation needed for
 DOSE-style data selection.
