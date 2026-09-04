@@ -102,12 +102,12 @@ Right panel:
   candidate ratio to 40%:
 
 ```text
-0.20 -> 493
-0.24 -> 636
-0.27 -> 773
-0.30 -> 904
-0.35 -> 1159
-0.40 -> 1429
+20% -> 493
+24% -> 636
+27% -> 773
+30% -> 904
+35% -> 1159
+40% -> 1429
 ```
 
 After the 40% candidate intersection produced enough samples, the final subset
