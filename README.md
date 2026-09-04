@@ -102,13 +102,15 @@ Right panel:
   candidate ratio to 40%:
 
 ```text
-20% -> 493
-24% -> 636
-27% -> 773
-30% -> 904
-35% -> 1159
-40% -> 1429
+20% -> 8.2%
+24% -> 10.6%
+27% -> 12.9%
+30% -> 15.1%
+35% -> 19.3%
+40% -> 23.8%
 ```
 
-After the 40% candidate intersection produced enough samples, the final subset
-was truncated to the requested 1,200 budget.
+Here, the left side is the candidate ratio used independently in each
+dimension, and the right side is the size of their intersection as a percentage
+of the full dataset. After the 40% candidate intersection exceeded the 20%
+budget, the final subset was truncated to the requested 20%.
