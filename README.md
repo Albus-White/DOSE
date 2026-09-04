@@ -15,9 +15,13 @@ DOSE-style data selection.
 
 ## CLIP Score
 
-The released `clip_score_up.py` / `clip_score_down.py` concatenate every
-`value` in `ori_conversations` and score it against the sample image with
-OpenCLIP `ViT-B-32`, pretrained on `laion2b_s34b_b79k`.
+This script computes the same CLIP relevance score for every sample. If the
+dataset is large, the input can be split into shards and scored independently;
+sharding is only for speed and does not change the scoring logic.
+
+By default it concatenates every `value` in `ori_conversations` and scores the
+text against the sample image with OpenCLIP `ViT-B-32`, pretrained on
+`laion2b_s34b_b79k`.
 
 Example:
 
@@ -73,12 +77,7 @@ existing score fields.
 
 ## Visualization Result
 
-The generated visualization is included in this folder:
-
-```text
-dense_guide_sampling_visualization.png
-dense_guide_sampling_visualization.summary.json
-```
+![Dense-guide sampling visualization](dense_guide_sampling_visualization.png)
 
 It uses 6,000 toy scores sampled from a clipped normal distribution in `[0, 1]`
 and selects a 20% budget, i.e. 1,200 samples.
