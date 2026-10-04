@@ -32,6 +32,18 @@ pip install torch transformers open_clip_torch pillow numpy tqdm
 2. `clip_score.py` appends `clip_score` (image-text alignment).
 3. `dense_guide_sampling.py` selects the final subset (`dense1d` or `wrs2d`).
 
+## Training Data and Evaluation
+
+We follow [MoE-LLaVA](https://github.com/PKU-YuanGroup/MoE-LLaVA) for the
+training data and the evaluation setup:
+
+- **Training data**: preparation, downloads, and directory layout are described
+  in [docs/TRAIN.md](https://github.com/PKU-YuanGroup/MoE-LLaVA/blob/main/docs/TRAIN.md).
+  DOSE scores this visual instruction tuning data and selects the training
+  subset from it.
+- **Evaluation**: evaluation data and scripts are described in
+  [docs/EVAL.md](https://github.com/PKU-YuanGroup/MoE-LLaVA/blob/main/docs/EVAL.md).
+
 ## Text Quality Score
 
 `text_quality_score.py` scores the text of every sample with the ASK-LLM style
