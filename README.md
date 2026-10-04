@@ -1,4 +1,4 @@
-# DOSE: Data Selection for Multi-Modal LLMs via Off-the-Shelf Model
+# DOSE: Data Selection for Multi-Modal LLMs via Off-the-Shelf Models
 
 ## Files
 
@@ -111,3 +111,16 @@ Here, the left side is the candidate ratio used independently in each
 dimension, and the right side is the size of their intersection as a percentage
 of the full dataset. After the 40% candidate intersection exceeded the 20%
 budget, the final subset was truncated to the requested 20%.
+
+## Citation
+
+If you find this work useful, please cite:
+
+```bibtex
+@article{wu2026dose,
+  title={DOSE: Data Selection for Multi-Modal LLMs via Off-the-Shelf Models},
+  author={Wu, Biao and Zhong, Yiwu and Fang, Meng and Chen, Ling},
+  journal={arXiv preprint arXiv:2604.16979},
+  year={2026}
+}
+```
