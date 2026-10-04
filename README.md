@@ -1,14 +1,91 @@
 # DOSE: Data Selection for Multi-Modal LLMs via Off-the-Shelf Models
 
+Code release for **DOSE** ([arXiv:2604.16979](https://arxiv.org/abs/2604.16979)).
+DOSE builds a compact, high-quality subset of visual instruction tuning data
+using only off-the-shelf pretrained models: an instruction-tuned LLM scores
+text quality, CLIP scores image-text alignment, and the two scores form a
+joint quality-alignment distribution that is sampled with dense-guide weighted
+random sampling (WRS). No selection model is trained on the target data, and
+no gradient or training signal is required.
+
 ## Files
 
-- `clip_score.py`: compute CLIP image-text scores and append `clip_score`.
-- `dense_guide_sampling.py`: single-dimension dense-guide WRS and
-  two-dimension dense-guide WRS intersection expansion.
+- `text_quality_score.py`: ASK-LLM style text-quality scoring with an
+  off-the-shelf LLM; appends `text_quality_score`.
+- `clip_score.py`: CLIP image-text relevance scoring; appends `clip_score`.
+- `dense_guide_sampling.py`: one-dimensional dense-guide WRS and two-dimensional
+  dense-guide WRS with expanding intersection.
 - `dense_guide_sampling_visualization.png`: toy visualization of the sampling
   behavior.
 - `dense_guide_sampling_visualization.summary.json`: numeric summary for the
   visualization.
+
+## Requirements
+
+```bash
+pip install torch transformers open_clip_torch pillow numpy tqdm
+```
+
+## Pipeline
+
+1. `text_quality_score.py` appends `text_quality_score` (text quality).
+2. `clip_score.py` appends `clip_score` (image-text alignment).
+3. `dense_guide_sampling.py` selects the final subset (`dense1d` or `wrs2d`).
+
+## Text Quality Score
+
+`text_quality_score.py` scores the text of every sample with the ASK-LLM style
+template used in DOSE (Table 1). The sample text is rendered into
+
+```text
+###
+{text}
+###
+
+Does the previous paragraph demarcated within ### and ### contain informative
+signal for visual instruction tuning a vision-language model? An informative
+data point should be well-formatted, contain usable knowledge of the world,
+and strictly NOT have any harmful, racist, sexist, etc. content.
+OPTIONS:
+- yes
+- no
+Response:
+```
+
+and the probability of the "yes" option is appended as `text_quality_score`.
+Only the text is scored: `<image>` tokens are stripped from the prompt, as in
+the paper's scoring template. No model is fine-tuned; only forward passes are
+used. The default scorer is Vicuna-7B (`lmsys/vicuna-7b-v1.5`), the scorer
+used in the paper.
+
+Scoring variants (all can be written in the same pass with `--all-variants`):
+
+| Setting | Output field | Definition |
+| --- | --- | --- |
+| `--answer-mode next --prob-mode pair` (default) | `text_quality_score` | P("yes") with the softmax normalized over the yes/no tokens |
+| `--answer-mode next --prob-mode vocab` | `text_quality_score` | raw P("yes") over the full vocabulary |
+| `--answer-mode next` | `text_quality_score_margin` | `logit("yes") - logit("no")`, equal to the difference of the two log-probabilities |
+| `--answer-mode target` | `text_quality_score_logprob` | teacher-forced log-probability of `--target-answer` (sum over tokens; mean with `--length-normalize`) |
+
+`text_quality_score_logprob` always stores the log-probability of the same
+event as `text_quality_score`. The `target` mode is useful for reproducing
+older "yes target log-probability" style scores.
+
+Example:
+
+```bash
+python text_quality_score.py \
+  --input input.json \
+  --output output_with_text_quality.json \
+  --model lmsys/vicuna-7b-v1.5 \
+  --text-source ori_conversations \
+  --text-mode all_values \
+  --meta-output output_with_text_quality.meta.json
+```
+
+Like `clip_score.py`, the input can be split into shards with `--start/--end`
+and scored independently; sharding is only for speed. `--dry-run` renders the
+prompts without loading any model, which is useful before large runs.
 
 ## CLIP Score
 
@@ -42,7 +119,7 @@ python dense_guide_sampling.py \
   --input scored.json \
   --output selected_text_20p.json \
   --method dense1d \
-  --score-key yes_target_logprob_7B_NImg \
+  --score-key text_quality_score \
   --ratio 0.2 \
   --seed 42 \
   --meta-output selected_text_20p.meta.json
@@ -55,7 +132,7 @@ python dense_guide_sampling.py \
   --input scored_with_clip.json \
   --output selected_20p_wrs2d.json \
   --method wrs2d \
-  --score-key yes_target_logprob_7B_NImg \
+  --score-key text_quality_score \
   --clip-key clip_score \
   --ratio 0.2 \
   --expand-ratios 0.20,0.24,0.27,0.30,0.35,0.40,0.50,0.60,0.80,1.00 \
@@ -70,7 +147,9 @@ stable weighted random ordering; the merge uses the expanding top-ratio
 intersection rule.
 
 The sampling script does not compute LLM logits or CLIP scores. It consumes
-existing score fields.
+existing score fields, for example `text_quality_score` from
+`text_quality_score.py` or `clip_score` from `clip_score.py`; an older numeric
+column such as `yes_target_logprob_7B_NImg` can also be passed to `--score-key`.
 
 ## Visualization Result
 
@@ -118,9 +197,21 @@ If you find this work useful, please cite:
 
 ```bibtex
 @article{wu2026dose,
-  title={DOSE: Data Selection for Multi-Modal LLMs via Off-the-Shelf Models},
-  author={Wu, Biao and Zhong, Yiwu and Fang, Meng and Chen, Ling},
-  journal={arXiv preprint arXiv:2604.16979},
-  year={2026}
+  title   = {DOSE: Data Selection for Multi-Modal LLMs via Off-the-Shelf Models},
+  author  = {Wu, Biao and Zhong, Yiwu and Fang, Meng and Chen, Ling},
+  journal = {arXiv preprint arXiv:2604.16979},
+  year    = {2026}
+}
+```
+
+This repository also follows the quality-driven curriculum learning setup
+introduced in:
+
+```bibtex
+@article{wu2024curriculum,
+  title   = {Curriculum Learning with Quality-Driven Data Selection},
+  author  = {Wu, Biao and Chen, Ling},
+  journal = {arXiv preprint arXiv:2407.00102},
+  year    = {2024}
 }
 ```
